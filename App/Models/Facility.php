@@ -6,7 +6,7 @@ class Facility extends Injectable
 {
     public function createFacility($name, $locationId, $tagIds = [])
     {
-        $query = "INSERT INTO facilities (name, location_id, created_at) VALUES (:name, :location_id, NOW());";
+        $query = "INSERT INTO facilities (name, location_id, creation_date) VALUES (:name, :location_id, NOW());";
         $bind = ['name' => $name, 'location_id' => $locationId];
         $result = $this->db->executeQuery($query, $bind);
         if ($result) {

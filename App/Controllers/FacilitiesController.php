@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Models\Facility;
 use App\Models\Location;
 use App\Models\Tag;
+use App\Plugins\Http\Response as Status;
 
 class FacilitiesController extends BaseController
 {
@@ -24,15 +25,15 @@ class FacilitiesController extends BaseController
 
         // obtain parameters from the input
         $name = $input['name'];
+        
         // ensure facility names do not get repeated
         $selectQuery = "SELECT * FROM facilities WHERE name = :name";
         $result = $this->db->executeQuery($selectQuery, ['name' => $name]);
         if ($result && $result->rowCount() > 0) {
-            echo 'Facility name: ' . $name . " already exists";
             http_response_code(409);
+            echo "Facility name already exists";
             return;
         }
-
 
         $locationData = $input['locationData'];
         $tagNames = $input['tagNames'];
@@ -57,6 +58,7 @@ class FacilitiesController extends BaseController
         }
         $this->facilityModel->createFacility($name, $locationId, $tagIDs);
         http_response_code(201);
+        echo "Facility successfully created!";
     }
 
     public function updateFacility()
@@ -66,16 +68,23 @@ class FacilitiesController extends BaseController
         $oldName = $input['oldName'];
         $exists = $this->facilityModel->getFacilityByName($oldName);
         if (!$exists) {
-            echo "Facility name:" . $oldName . " does not exist";
             http_response_code(404);
+            echo "Facility name:" . $oldName . " does not exist";
             return;
         }
 
         $newName = $input['newName'];
+        $exists = $this->facilityModel->getFacilityByName($newName);
+        if ($exists) {
+            http_response_code(409);
+            echo "Cannot change facility name to: " . $newName . " as it already exists";
+            return;
+        }
+
         $tagNames = $input['tagNames'];
 
         foreach ($tagNames as $oldTagName => $newTagName) {
-            $oldTagName = trim($oldName);
+            $oldTagName = trim($oldTagName);
             $newTagName = trim($newTagName);
             if ($newTagName !== "") {
                 $tagID = $this->tagModel->updateTag($oldTagName, $newTagName);
@@ -87,6 +96,7 @@ class FacilitiesController extends BaseController
 
         $this->facilityModel->updateFacility($oldName, $newName);
         http_response_code(200);
+        echo "Facility and tags successfully updated!";
     }
 
     //obtain all instances of a facility with a name
@@ -121,6 +131,7 @@ class FacilitiesController extends BaseController
         } else {
             echo "No facilities found";
             http_response_code(404);
+            (new Status\NoContent())->send();
             return;
         }
         http_response_code(200);

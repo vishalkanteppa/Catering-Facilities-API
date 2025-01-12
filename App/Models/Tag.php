@@ -58,18 +58,19 @@ class Tag extends Injectable
         return $result->fetchAll(\PDO::FETCH_ASSOC);
     }
 
-    public function updateTag(string $oldName, string $newName): bool
+    public function updateTag(string $oldName, string $newName) 
     {
         // checking if tag exists first
         $checkQuery = "SELECT COUNT(*) FROM tags WHERE name = :oldName";
         $result = $this->db->executeQuery($checkQuery, ['oldName' => $oldName]);
 
-        if ($result) {
+        if ($result && $result->rowCount() > 0) {
             $query = "UPDATE tags SET name = :newName WHERE name = :oldName";
             $this->db->executeQuery($query, ['newName' => $newName, 'oldName' => $oldName]);
 
             $query = "SELECT id from tags WHERE name = :newName";
-            $tagId = $this->db->executeQuery($query, ['newName' => $newName])->fetch(\PDO::FETCH_ASSOC)['id'];
+            $tagId = $this->db->executeQuery($query, ['newName' => $newName])->fetch(\PDO::FETCH_ASSOC);
+            // var_dump($tagId);
             return $tagId;
         }
 

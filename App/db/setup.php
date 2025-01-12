@@ -1,12 +1,11 @@
 <?php
 namespace App\Db;
-use App\Controllers\BaseController;
+use App\Plugins\Di\Injectable;
 
-class Setup extends BaseController
+class Setup extends Injectable
 {
     public function runSetup()
     {
-        // Assuming $this->db is the database instance from the DI container
         $query = "
             CREATE TABLE IF NOT EXISTS facilities (
                 id INT AUTO_INCREMENT PRIMARY KEY,
@@ -41,7 +40,6 @@ class Setup extends BaseController
             );
         ";
 
-        // Execute the query to set up the database
         $this->db->executeQuery($query, []);
     }
 }
