@@ -77,7 +77,7 @@ class Facility extends Injectable
 
     public function searchFacilities(array $filters): array
     {
-        $query = "SELECT DISTINCT f.id, f.name AS facility_name, l.city AS location_city, t.name AS tag_name
+        $query = "SELECT DISTINCT f.id, f.name AS facility_name, l.city AS location_city
               FROM facilities f
               JOIN locations l ON f.location_id = l.id
               LEFT JOIN facility_tags ft ON f.id = ft.facility_id
