@@ -16,6 +16,11 @@ require_once '../config/services.php';
 // Router
 $router = require_once '../routes/router.php';
 
+// to setup the db in the first run
+use App\Db\Setup;
+$setup = new Setup();
+$setup->runSetup();
+
 // Run application through router:
 try {
     $router->run();

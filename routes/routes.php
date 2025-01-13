@@ -10,5 +10,5 @@ $router->get('/read_facilities', App\Controllers\FacilitiesController::class . '
 $router->post('/create_facility', App\Controllers\FacilitiesController::class . '@createFacility');
 $router->put('/update_facility', App\Controllers\FacilitiesController::class . '@updateFacility');
 $router->delete('/delete_facility/{name}', App\Controllers\FacilitiesController::class . '@deleteFacility');
-$router->get('/search_facilities', \App\Controllers\FacilitiesController::class . '@searchFacilities');
+$router->get('/search_facilities', \App\Controllers\FacilitiesController::class . '@searchFacilitiesByFilter');
 

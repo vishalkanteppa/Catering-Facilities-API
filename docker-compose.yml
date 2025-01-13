@@ -14,7 +14,7 @@ services:
     environment:
       - DB_HOST=db
       - DB_USER=root
-      - DB_PASSWORD=example
+      - DB_PASSWORD=""
       - DB_NAME=my_database
 
   db:

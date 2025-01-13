@@ -6,40 +6,8 @@ class Setup extends Injectable
 {
     public function runSetup()
     {
-        $query = "
-            CREATE TABLE IF NOT EXISTS facilities (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                name VARCHAR(255) NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            );
-            CREATE TABLE IF NOT EXISTS tags (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                name VARCHAR(255) UNIQUE NOT NULL
-            );
-            CREATE TABLE IF NOT EXISTS locations (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                city VARCHAR(255) NOT NULL,
-                address VARCHAR(255) NOT NULL,
-                zip_code VARCHAR(10),
-                country_code VARCHAR(3),
-                phone_number VARCHAR(20)
-            );
-            CREATE TABLE IF NOT EXISTS facility_tags (
-                facility_id INT,
-                tag_id INT,
-                FOREIGN KEY (facility_id) REFERENCES facilities(id),
-                FOREIGN KEY (tag_id) REFERENCES tags(id),
-                PRIMARY KEY (facility_id, tag_id)
-            );
-            CREATE TABLE IF NOT EXISTS facility_location (
-                facility_id INT,
-                location_id INT,
-                FOREIGN KEY (facility_id) REFERENCES facilities(id),
-                FOREIGN KEY (location_id) REFERENCES locations(id),
-                PRIMARY KEY (facility_id, location_id)
-            );
-        ";
-
+        $schemaFile = __DIR__ . '/database_schema.sql';
+        $query = file_get_contents($schemaFile);
         $this->db->executeQuery($query, []);
     }
 }

@@ -25,13 +25,16 @@ class FacilitiesController extends BaseController
 
         // obtain parameters from the input
         $name = $input['name'];
-        
+
         // ensure facility names do not get repeated
         $selectQuery = "SELECT * FROM facilities WHERE name = :name";
         $result = $this->db->executeQuery($selectQuery, ['name' => $name]);
         if ($result && $result->rowCount() > 0) {
             http_response_code(409);
-            echo "Facility name already exists";
+            echo json_encode([
+                'success' => false,
+                'message' => "Facility name already exists",
+            ]);
             return;
         }
 
@@ -58,7 +61,10 @@ class FacilitiesController extends BaseController
         }
         $this->facilityModel->createFacility($name, $locationId, $tagIDs);
         http_response_code(201);
-        echo "Facility successfully created!";
+        echo json_encode([
+            'success' => true,
+            'message' => "Facility successfully created!",
+        ]);
     }
 
     public function updateFacility()
@@ -69,7 +75,10 @@ class FacilitiesController extends BaseController
         $exists = $this->facilityModel->getFacilityByName($oldName);
         if (!$exists) {
             http_response_code(404);
-            echo "Facility name:" . $oldName . " does not exist";
+            echo json_encode([
+                'success' => false,
+                'message' => "Facility name: " . $oldName . " does not exist",
+            ]);
             return;
         }
 
@@ -77,7 +86,10 @@ class FacilitiesController extends BaseController
         $exists = $this->facilityModel->getFacilityByName($newName);
         if ($exists) {
             http_response_code(409);
-            echo "Cannot change facility name to: " . $newName . " as it already exists";
+            echo json_encode([
+                'success' => false,
+                'message' => "Cannot change facility name to: " . $newName . " as it already exists",
+            ]);
             return;
         }
 
@@ -96,7 +108,10 @@ class FacilitiesController extends BaseController
 
         $this->facilityModel->updateFacility($oldName, $newName);
         http_response_code(200);
-        echo "Facility and tags successfully updated!";
+        echo json_encode([
+            'success' => true,
+            'message' => "Facility and tags successfully updated!",
+        ]);
     }
 
     //obtain all instances of a facility with a name
@@ -105,14 +120,15 @@ class FacilitiesController extends BaseController
         $result = $this->facilityModel->getFacilityByName($fname);
         if ($result) {
             foreach ($result as $facility) {
-                foreach ($facility as $i => $j) {
-                    echo $i . " " . $j . "<br>";
-                }
+                echo json_encode($facility);
                 echo "<br>"; // separate each facility
             }
         } else {
-            echo "No results found.";
             http_response_code(404);
+            echo json_encode([
+                'success' => false,
+                'message' => 'No results found',
+            ]);
             return;
         }
         http_response_code(200);
@@ -123,15 +139,16 @@ class FacilitiesController extends BaseController
         $result = $this->facilityModel->getAllFacilities();
         if ($result) {
             foreach ($result as $facility) {
-                foreach ($facility as $column => $value) {
-                    echo $column . ": " . $value . "<br>";
-                }
+                echo json_encode($facility);
                 echo "<br>";
             }
         } else {
-            echo "No facilities found";
+            
             http_response_code(404);
-            (new Status\NoContent())->send();
+            echo json_encode([
+                'success' => false,
+                'message' => 'No facilities found',
+            ]);
             return;
         }
         http_response_code(200);
@@ -144,8 +161,12 @@ class FacilitiesController extends BaseController
         $bind = ['name' => $name];
         $result = $this->db->executeQuery($selectQuery, $bind);
         if (!$result || $result->rowCount() <= 0) {
-            echo "This facility does not exist";
+            
             http_response_code(404);
+            echo json_encode([
+                'success' => false,
+                'message' => 'This facility does not exist',
+            ]);
             return;
         }
         $facility = $result->fetch(\PDO::FETCH_ASSOC);
@@ -153,9 +174,13 @@ class FacilitiesController extends BaseController
 
         $this->facilityModel->deleteFacility($facilityId);
         http_response_code(200);
+        echo json_encode([
+            'success' => true,
+            'message' => 'Facility successfully deleted!',
+        ]);
     }
 
-    public function searchFacilities()
+    public function searchFacilitiesByFilter()
     {
         // obtain parameters from URL
         $facilityName = $_GET['facility_name'] ?? null;
@@ -171,13 +196,13 @@ class FacilitiesController extends BaseController
         $results = $this->facilityModel->searchFacilities($filters);
 
         if (!empty($results)) {
-            http_response_code(200); 
-            echo json_encode([
-                'success' => true,
-                'data' => $results,
-            ]);
+            http_response_code(200);
+            foreach ($results as $row) {
+                echo json_encode($row);
+                echo '<br>';
+            }
         } else {
-            http_response_code(404); 
+            http_response_code(404);
             echo json_encode([
                 'success' => false,
                 'message' => 'No facilities found matching the search criteria.',
