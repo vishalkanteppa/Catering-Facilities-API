@@ -2,7 +2,7 @@
 	"info": {
 		"_postman_id": "05c68fe6-6bdc-43c4-8b28-07ffc3085552",
 		"name": "DTT Backend Assessment",
-		"description": "This document outlines the guidelines for all requests related to the assessment.\n\nBelow is an example of how responses will be structured.\n\n``` json\n    { \n        \"success\": true, \n        \"message\": \"Facility successfully created!\" \n    }\n\n ```",
+		"description": "This document outlines the guidelines for all requests related to the assessment.\n\nBelow is an example of how responses will be structured. All request bodies are in _raw JSON_ format.\n\n``` json\n    { \n        \"success\": true, \n        \"message\": \"Facility successfully created!\" \n    }\n\n ```",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "10129698",
 		"_collection_link": "https://gold-shuttle-719915.postman.co/workspace/d5b54e21-181c-44d1-86a7-33eb9f40e894/collection/10129698-05c68fe6-6bdc-43c4-8b28-07ffc3085552?action=share&source=collection_link&creator=10129698"
