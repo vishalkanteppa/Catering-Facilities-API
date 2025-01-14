@@ -24,10 +24,10 @@ class FacilitiesController extends BaseController
     // function used to generate responses
     public function sendHttpResponse($statusCode, $success, $message) {
         http_response_code($statusCode);
-        print_r( json_encode([
+        echo json_encode([
             'success' => $success,
             'message' => $message,
-        ]));
+        ], JSON_PRETTY_PRINT);
     }
 
     public function createFacility()

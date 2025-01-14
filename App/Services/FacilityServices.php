@@ -49,13 +49,13 @@ class FacilityServices extends Injectable
         // ensure facility exists before updating
         $exists = $this->facilityModel->getFacilityByName($oldName);
         if (!$exists) {
-            return ['status' => false, 'message' => "Facility name: " . $oldName . " does not exist", 'code' => 404];
+            return ['status' => false, 'message' => "Facility name does not exist", 'code' => 404];
         }
 
         // ensure new facility name does not exist
         $exists = $this->facilityModel->getFacilityByName($newName);
         if ($exists) {
-            return ['status' => false, 'message' => "Cannot change facility name to: " . $newName . " as it already exists", 'code' => 409];
+            return ['status' => false, 'message' => "Cannot change facility name as it already exists", 'code' => 409];
         }
 
         // update tags individually
@@ -148,7 +148,7 @@ class FacilityServices extends Injectable
             }
             return ['status' => true, 'message' => $data, 'code' => 200];
         }
-        
+
         return ['status' => false, 'message' => 'No facilities found matching the criteria', 'code' => 404];
     }
 
