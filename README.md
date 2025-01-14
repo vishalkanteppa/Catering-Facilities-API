@@ -1,6 +1,7 @@
 # Catering Facilities API
 
 This API provides a simple interface to perform CRUD operations on catering data and allows access to a MySQL database via PHPMyAdmin.
+
 The hour log spreadsheet, db dump files and API documentation are present in the extraFiles folder.
 
 ## Prerequisites
