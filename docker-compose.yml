@@ -8,7 +8,7 @@ services:
       - "8080:80"
     volumes:
       - .:/var/www/html
-    # command: ["php", "/var/www/html/App/db/setup.php"]
+    command: ["php", "composer.phar", "install"]
     depends_on:
       - db
     environment:
