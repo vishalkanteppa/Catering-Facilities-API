@@ -9,9 +9,16 @@ Ensure that [Docker](https://www.docker.com/) is installed on your system.
 
 1. Clone the repository to your local machine.
 2. Navigate to the project directory.
-3. Run the following command to build and start the containers in detached mode:
 ```bash
-    docker-compose up --build -d
+cd Catering-Facilities-API
+```
+3. Install dependencies.
+```bash
+php composer.phar install
+```
+4. Run the following command to build and start the containers in detached mode:
+```bash
+docker-compose up --build -d
 ```
 This will build the images and start the containers in the background.
 
@@ -30,7 +37,7 @@ Once the containers are up, you can access the API through the following:
 To stop and remove the containers, run the following command with the `-v` flag set to remove the volumes as well.
 
 ```bash
-    docker-compose down -v
+docker-compose down -v
 ```
 This will stop the containers and delete the associated volumes.
 
