@@ -1,0 +1,44 @@
+[
+{"type":"header","version":"5.2.1","comment":"Export to JSON plugin for PHPMyAdmin"},
+{"type":"database","name":"catering_facilities"},
+{"type":"table","name":"facilities","database":"catering_facilities","data":
+[
+{"id":"1","name":"Facility C","creation_date":"2025-01-14 19:54:50","location_id":"1"},
+{"id":"3","name":"Facility J","creation_date":"2025-01-14 20:00:16","location_id":"3"},
+{"id":"4","name":"Facility L","creation_date":"2025-01-14 20:00:53","location_id":"4"},
+{"id":"5","name":"Facility P","creation_date":"2025-01-14 20:01:27","location_id":"5"},
+{"id":"6","name":"Facility M","creation_date":"2025-01-14 20:01:49","location_id":"6"},
+{"id":"7","name":"Facility A","creation_date":"2025-01-14 20:03:07","location_id":"7"}
+]
+}
+,{"type":"table","name":"facility_tags","database":"catering_facilities","data":
+[
+{"facility_id":"1","tag_id":"1"},
+{"facility_id":"3","tag_id":"1"},
+{"facility_id":"4","tag_id":"4"},
+{"facility_id":"5","tag_id":"4"},
+{"facility_id":"4","tag_id":"5"},
+{"facility_id":"6","tag_id":"7"},
+{"facility_id":"7","tag_id":"7"}
+]
+}
+,{"type":"table","name":"locations","database":"catering_facilities","data":
+[
+{"id":"1","city":"Utrecht","address":"Street 3","zip_code":"3422AC","country_code":"NL","phone_number":"1234567890"},
+{"id":"2","city":"Amsterdam","address":"Jan van Galenstraat","zip_code":"1061AZ","country_code":"NL","phone_number":"1234567890"},
+{"id":"3","city":"Rotterdam","address":"Street 2","zip_code":"0900AZ","country_code":"NL","phone_number":"1234567890"},
+{"id":"4","city":"Leiden","address":"Street 3","zip_code":"1934AZ","country_code":"NL","phone_number":"1234567890"},
+{"id":"5","city":"Leiden","address":"Street 5","zip_code":"1921AZ","country_code":"NL","phone_number":"1234567890"},
+{"id":"6","city":"Den Haague","address":"Street 98","zip_code":"1901AJ","country_code":"NL","phone_number":"1234567890"},
+{"id":"7","city":"Amsterdam","address":"Jan van Galenstraat","zip_code":"1061AZ","country_code":"NL","phone_number":"1234567890"}
+]
+}
+,{"type":"table","name":"tags","database":"catering_facilities","data":
+[
+{"id":"4","name":"Tag A"},
+{"id":"1","name":"Tag L"},
+{"id":"7","name":"Tag O"},
+{"id":"5","name":"Tag P"}
+]
+}
+]
