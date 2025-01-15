@@ -5,7 +5,7 @@ This API provides a simple interface to perform CRUD operations on catering data
 The hour log spreadsheet, db dump files and API documentation are present in the extraFiles folder.
 
 ## Prerequisites
-Ensure that [Docker](https://www.docker.com/) is installed on your system.
+Ensure that [Docker](https://www.docker.com/) and [PHP](https://www.php.net/manual/en/install.php) are installed on your system.
 
 ## Setup and Running the Project
 
