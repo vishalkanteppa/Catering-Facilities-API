@@ -5,7 +5,7 @@
 		"description": "This document outlines the guidelines for all requests related to the assessment.\n\nBelow is an example of how responses will be structured. All request bodies are in _raw JSON_ format.\n\n``` json\n    { \n        \"success\": true, \n        \"message\": \"Facility successfully created!\" \n    }\n\n ```",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "10129698",
-		"_collection_link": "https://gold-shuttle-719915.postman.co/workspace/Team-Workspace~d5b54e21-181c-44d1-86a7-33eb9f40e894/collection/10129698-05c68fe6-6bdc-43c4-8b28-07ffc3085552?action=share&source=collection_link&creator=10129698"
+		"_collection_link": "https://gold-shuttle-719915.postman.co/workspace/d5b54e21-181c-44d1-86a7-33eb9f40e894/collection/10129698-05c68fe6-6bdc-43c4-8b28-07ffc3085552?action=share&source=collection_link&creator=10129698"
 	},
 	"item": [
 		{
@@ -14,12 +14,10 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/api/facilities",
-					"protocol": "http",
+					"raw": "{{base_url}}/api/facilities",
 					"host": [
-						"localhost"
+						"{{base_url}}"
 					],
-					"port": "8080",
 					"path": [
 						"api",
 						"facilities"
@@ -35,16 +33,20 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/api/facilities/{faciilityName}",
-					"protocol": "http",
+					"raw": "{{base_url}}/api/facilities/:facilityName",
 					"host": [
-						"localhost"
+						"{{base_url}}"
 					],
-					"port": "8080",
 					"path": [
 						"api",
 						"facilities",
-						"{faciilityName}"
+						":facilityName"
+					],
+					"variable": [
+						{
+							"key": "facilityName",
+							"value": ""
+						}
 					]
 				},
 				"description": "Obtains a facility along with its location and tags by faciilty name\n\n#### Responses\n\n- Success: **200 OK**\n    \n- Resource not found: **404 not found**"
@@ -58,7 +60,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"name\": \"Facility A\",\n    \"locationData\": {\n        \"city\": \"Amsterdam\",\n        \"address\": \"Street 1\",\n        \"zip_code\": \"1011AB\",\n        \"country_code\": \"NL\",\n        \"phone_number\": \"1234567890\"\n    },\n    \"tagNames\": [\"Tag H\", \"Tag B\"]\n}",
+					"raw": "{\n    \"name\": \"Facility A\",\n    \"locationData\": {\n        \"city\": \"Amsterdam\",\n        \"address\": \"Jan van Galenstraat\",\n        \"zip_code\": \"1061AZ\",\n        // \"country_code\": \"NL\",\n        \"phone_number\": \"1234567890\"\n    },\n    \"tagNames\": [\"Tag O\",\"Tag p\"]\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -66,18 +68,16 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/api/facilities",
-					"protocol": "http",
+					"raw": "{{base_url}}/api/facilities",
 					"host": [
-						"localhost"
+						"{{base_url}}"
 					],
-					"port": "8080",
 					"path": [
 						"api",
 						"facilities"
 					]
 				},
-				"description": "Creates a facility with the specified location and tags associated with it\n\n#### Responses:\n\n- Success: **201 created**\n    \n- Conflict: **409 conflict**"
+				"description": "Creates a facility with the specified location and tags associated with it\n\n#### Responses:\n\n- Success: **201 created**\n    \n- Conflict: **409 conflict**\n    \n- Bad request: **400 bad request**"
 			},
 			"response": []
 		},
@@ -88,7 +88,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"oldName\": \"Facility A\",\n    \"newName\": \"Facility B\",\n    \"tagNames\": {\n        \"Tag B\" : \"Tag P\"\n    }\n}   ",
+					"raw": "{\n    \"oldName\": \"Facility A\",\n    \"newName\": \"Facility os\",\n    \"tagNames\": {\n        \"Tag B\" : \"Tag P\"\n    }\n}   ",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -96,18 +96,16 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/api/facilities",
-					"protocol": "http",
+					"raw": "{{base_url}}/api/facilities",
 					"host": [
-						"localhost"
+						"{{base_url}}"
 					],
-					"port": "8080",
 					"path": [
 						"api",
 						"facilities"
 					]
 				},
-				"description": "Updates a facility and its associated tags\n\n#### Responses:\n\n- Success: **200 OK**\n    \n- Resource not found: **404 not found**\n    \n- Conflict: **409 conflict**\n    \n\nRequest body is as shown below:\n\n``` json\n    {\n    \"oldName\": \"Facility A\",\n    \"newName\": \"Facility B\",\n    \"tagNames\": {\n        \"oldTagName\" : \"newTagName\"\n    }\n}   \n\n ```"
+				"description": "Updates a facility and its associated tags\n\n#### Responses:\n\n- Success: **200 OK**\n    \n- Resource not found: **404 not found**\n    \n- Conflict: **409 conflict**\n    \n- Bad request: **400 bad request**\n    \n\nRequest body is as shown below:\n\n``` json\n    {\n    \"oldName\": \"Facility A\",\n    \"newName\": \"Facility B\",\n    \"tagNames\": {\n        \"oldTagName\" : \"newTagName\"\n    }\n}   \n\n ```"
 			},
 			"response": []
 		},
@@ -117,16 +115,20 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/api/facilities/{facilityName}",
-					"protocol": "http",
+					"raw": "{{base_url}}/api/facilities/:facilityName",
 					"host": [
-						"localhost"
+						"{{base_url}}"
 					],
-					"port": "8080",
 					"path": [
 						"api",
 						"facilities",
-						"{facilityName}"
+						":facilityName"
+					],
+					"variable": [
+						{
+							"key": "facilityName",
+							"value": "Facility A"
+						}
 					]
 				},
 				"description": "Deletes a facility and its associated tags\n\n#### Responses\n\n- Success: **200 OK**\n    \n- Resource not found: **404 not found**"
@@ -139,7 +141,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{base_url}}/api/facilities/search",
+					"raw": "{{base_url}}/api/facilities/search?location_city=Amsterdam",
 					"host": [
 						"{{base_url}}"
 					],
@@ -150,18 +152,17 @@
 					],
 					"query": [
 						{
-							"key": "facility_name",
-							"value": "Facility J",
-							"disabled": true
-						},
-						{
 							"key": "tag_name",
-							"value": "Tag H",
+							"value": "Tag O",
 							"disabled": true
 						},
 						{
 							"key": "location_city",
-							"value": "Leiden",
+							"value": "Amsterdam"
+						},
+						{
+							"key": "facility_name",
+							"value": "Facility A",
 							"disabled": true
 						}
 					]
