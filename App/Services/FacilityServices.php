@@ -20,14 +20,54 @@ class FacilityServices extends Injectable
         $this->tagModel = new Tag();
     }
 
-    public function createFacility($name, $locationData, $tagNames)
+    public function validateCreateFacilityInput($input)
     {
-        // ensure facility name does not get repeated
-        $exists = $this->facilityModel->getFacilityByName($name);
-        if ($exists) {
-            return ['status' => false, 'message' => "Facility name already exists", 'code' => 409];
+        // ensuring none of the inputs are empty
+        if (empty($input['name']) || empty($input['locationData']) || empty($input['tagNames'])) {
+            return ['status' => false, 'message' => "Missing required fields"];
         }
 
+        $locationData = $input['locationData'];
+        if (empty($locationData['city']) || empty($locationData['address']) || empty($locationData['zip_code']) || empty($locationData['country_code']) || empty($locationData['phone_number'])) {
+            return ['status' => false, 'message' => "Incomplete location data"];
+        }
+
+        if (empty($input['tagNames'])) {
+            return ['status' => false, 'message' => "Tags cannot be empty"];
+        }
+        return ['status' => true];
+    }
+
+    public function validateUpdateFacilityInput($input)
+    {
+        if (empty($input['oldName']) || empty($input['newName']) || empty($input['tagNames'])) {
+            return ['status' => false, 'message' => "Missing required fields"];
+        }
+
+        // check if tagNames is an associative array with valid tags
+        if (!is_array($input['tagNames']) || empty($input['tagNames'])) {
+            return ['status' => false, 'message' => "Tag names must be in an associative array format"];
+        }
+
+        // check that tagNames are key-value pairs
+        foreach ($input['tagNames'] as $key => $value) {
+            if (empty($key) || empty($value)) {
+                return ['status' => false, 'message' => "Tag names must contain non empty keys and values"];
+            }
+        }
+        return ['status' => true];
+    }
+
+    /**
+     * creates a new facility with the given name, location and tags
+     *
+     * @param string $name Name of facility
+     * @param array $locationData Location details
+     * @param array $tagNames List of tag names associated with the facility
+     * @return array Response with status, message and HTTP code
+     */
+    public function createFacility($name, $locationData, $tagNames)
+    {
         // create location and obtain locationId
         $locationId = $this->locationModel->createLocation(
             $locationData['city'],
@@ -40,22 +80,27 @@ class FacilityServices extends Injectable
         // create all tags and obtain tagIds
         $tagIDs = $this->createTags($tagNames);
 
-        $this->facilityModel->createFacility($name, $locationId, $tagIDs);
+        $facilityId = $this->facilityModel->createFacility($name, $locationId, $tagIDs);
+
+        $this->facilityModel->updateFacilityTags($facilityId, $tagIDs);
+
         return ['status' => true, 'message' => "Facility successfully created!", 'code' => 201];
     }
 
+    /**
+     * Updates an existing facilitys name and tags
+     *
+     * @param string $oldName Current facility name
+     * @param string $newName New facility name
+     * @param array $tagNames Array with key-value pairs mapping old tag name to new tag name
+     * @return array Response with status, message, and HTTP code
+     */
     public function updateFacility($oldName, $newName, $tagNames)
     {
         // ensure facility exists before updating
         $exists = $this->facilityModel->getFacilityByName($oldName);
         if (!$exists) {
             return ['status' => false, 'message' => "Facility name does not exist", 'code' => 404];
-        }
-
-        // ensure new facility name does not exist
-        $exists = $this->facilityModel->getFacilityByName($newName);
-        if ($exists) {
-            return ['status' => false, 'message' => "Cannot change facility name as it already exists", 'code' => 409];
         }
 
         // update tags individually
@@ -65,80 +110,61 @@ class FacilityServices extends Injectable
             if ($newTagName !== "") {
                 $tagID = $this->tagModel->updateTag($oldTagName, $newTagName);
                 if (!$tagID) {
-                    echo "Tag name: " . $oldTagName . " does not exist";
+                    return ['status' => false, 'message' => $oldTagName . " does not exist", 'code' => 404];
                 }
             }
         }
 
-        $this->facilityModel->updateFacility($oldName, $newName);
+        $id = $this->getFacilityIdByName($oldName);
+
+        $this->facilityModel->updateFacility($id, $oldName, $newName);
         return ['status' => true, 'message' => "Facility successfully updated!", 'code' => 200];
     }
 
+    /**
+     * Retrieves a facility by its name
+     *
+     * @param string $name Name of the facility
+     * @return array Response containing facility details or error message
+     */
     public function getFacilityByName($name)
     {
         $result = $this->facilityModel->getFacilityByName($name);
         if ($result) {
-            $data = [
-                'name' => $result[0]['name'],
-                'city' => $result[0]['city'],
-                'tags' => []
-            ];
-
-            // appending all tags associated with a facility
-            foreach ($result as $facility) {
-                $data['tags'][] = $facility['tag_name'];
-            }
-            return ['status' => true, 'message' => $data, 'code' => 200];
+            return ['status' => true, 'message' => $result, 'code' => 200];
         }
 
         return ['status' => false, 'message' => "No facilities found", 'code' => 404];
     }
 
+    /**
+     * Retrieves all facilities from the database.
+     * Create empty filters to obtain all facilities from db
+     * Re-using logic from searchFacilitiesByFilter
+     * 
+     * @return array Response with a list of facilities or an error message.
+     */
     public function getAllFacilities()
     {
-        $result = $this->facilityModel->getAllFacilities();
-        if ($result) {
-            $data = [];
-            // adding all facility data to an array
-            foreach ($result as $facility) {
-                $facility_name = $facility['facility_name'];
-                $data[$facility_name] = [
-                    'city' => $facility['city'],
-                    'tags' => []
-                ];
-            }
-
-            // appending all tags associated with a particular facility
-            foreach ($result as $facility) {
-                $data[$facility['facility_name']]['tags'][] = $facility['tag_name'];
-            }
-            return ['status' => true, 'message' => $data, 'code' => 200];
-        }
-
-        return ['status' => false, 'message' => "No facilities found", 'code' => 404];
+        $filters = [
+            "facility_name" => null,
+            "tag_name" => null,
+            "location_city" => null
+        ];
+        return $this->searchFacilitiesByFilter($filters);
     }
 
-    public function deleteFacility($name)
+    public function deleteFacility($facilityId)
     {
-        // ensure facility exists before deleting
-        $exists = $this->facilityModel->getFacilityByName($name);
-        if (!$exists) {
-            return ['status' => false, 'message' => "Facility name: " . $name . " does not exist", 'code' => 404];
+        if (!$facilityId) {
+            return ['status' => false, 'message' => "Facility does not exist", 'code' => 404];
         }
-
-        // obtain facility id to delete
-        // id is especially needed because we delete from facility_tags table as well. hence name is not used to delete
-        $selectQuery = "SELECT id FROM facilities WHERE name = :name";
-        $bind = ['name' => $name];
-        $result = $this->db->executeQuery($selectQuery, $bind);
-        $facility = $result->fetch(\PDO::FETCH_ASSOC);
-        $facilityId = $facility['id'];
 
         $this->facilityModel->deleteFacility($facilityId);
         return ['status' => true, 'message' => 'Facility successfully deleted!', 'code' => 200];
     }
 
-    public function searchFacilitiesByFilter($filters)
+    public function searchFacilitiesByFilter($filters = [])
     {
         $results = $this->facilityModel->searchFacilities($filters);
         if (!empty($results)) {
@@ -164,4 +190,16 @@ class FacilityServices extends Injectable
         }
         return $tagIDs;
     }
+
+    public function getFacilityIdByName($name)
+    {
+        $query = "SELECT id FROM facilities WHERE name = :name";
+        $bind = ['name' => $name];
+        $result = $this->db->executeQuery($query, $bind);
+
+        $facility = $result->fetch(\PDO::FETCH_ASSOC);
+        return $facility ? $facility['id'] : null;
+    }
+
 }
+

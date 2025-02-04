@@ -5,7 +5,7 @@
 		"description": "This document outlines the guidelines for all requests related to the assessment.\n\nBelow is an example of how responses will be structured. All request bodies are in _raw JSON_ format.\n\n``` json\n    { \n        \"success\": true, \n        \"message\": \"Facility successfully created!\" \n    }\n\n ```",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "10129698",
-		"_collection_link": "https://gold-shuttle-719915.postman.co/workspace/d5b54e21-181c-44d1-86a7-33eb9f40e894/collection/10129698-05c68fe6-6bdc-43c4-8b28-07ffc3085552?action=share&source=collection_link&creator=10129698"
+		"_collection_link": "https://gold-shuttle-719915.postman.co/workspace/Team-Workspace~d5b54e21-181c-44d1-86a7-33eb9f40e894/collection/10129698-05c68fe6-6bdc-43c4-8b28-07ffc3085552?action=share&source=collection_link&creator=10129698"
 	},
 	"item": [
 		{
@@ -139,12 +139,10 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/api/facilities/search?facility_name=Facility A&tag_name=Tag H&location_city=Leiden",
-					"protocol": "http",
+					"raw": "{{base_url}}/api/facilities/search",
 					"host": [
-						"localhost"
+						"{{base_url}}"
 					],
-					"port": "8080",
 					"path": [
 						"api",
 						"facilities",
@@ -153,21 +151,53 @@
 					"query": [
 						{
 							"key": "facility_name",
-							"value": "Facility A"
+							"value": "Facility J",
+							"disabled": true
 						},
 						{
 							"key": "tag_name",
-							"value": "Tag H"
+							"value": "Tag H",
+							"disabled": true
 						},
 						{
 							"key": "location_city",
-							"value": "Leiden"
+							"value": "Leiden",
+							"disabled": true
 						}
 					]
 				},
 				"description": "Search for facilities that match some criteria. Facility name, Tag names and City of Location can be used to filter by."
 			},
 			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080",
+			"type": "string"
 		}
 	]
 }

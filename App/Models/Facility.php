@@ -16,38 +16,30 @@ class Facility extends Injectable
             echo "Failed to create facility.";
             return 0;
         }
-        $this->updateFacilityTags($facilityId, $tagIds);
+        return $facilityId;
     }
 
     public function getFacilityByName($name)
     {
-        $query = "SELECT f.name, l.city, t.name AS tag_name
-                  FROM facilities f
-                  JOIN locations l ON f.location_id = l.id
-                  LEFT JOIN facility_tags ft ON f.id = ft.facility_id
-                  LEFT JOIN tags t ON ft.tag_id = t.id
-                  WHERE f.name = :name";
+        $query = "SELECT f.name, 
+                 l.city, 
+                 GROUP_CONCAT(t.name) AS tags
+          FROM facilities f
+          JOIN locations l ON f.location_id = l.id
+          LEFT JOIN facility_tags ft ON f.id = ft.facility_id
+          LEFT JOIN tags t ON ft.tag_id = t.id
+          WHERE f.name = :name
+          GROUP BY f.id, l.city";
+
         $bind = ['name' => $name];
         $result = $this->db->executeQuery($query, $bind);
         return $result ? $result->fetchAll(\PDO::FETCH_ASSOC) : null;
     }
 
-    public function getAllFacilities()
+    public function updateFacility($id, $oldName, $newName)
     {
-        $query = "SELECT f.name AS facility_name, l.city, t.name AS tag_name
-                  FROM facilities f
-                  JOIN locations l ON f.location_id = l.id
-                  LEFT JOIN facility_tags ft ON f.id = ft.facility_id
-                  LEFT JOIN tags t ON ft.tag_id = t.id";
-        $result = $this->db->executeQuery($query);
-        return $result ? $result->fetchAll(\PDO::FETCH_ASSOC) : null;
-    }
-
-
-    public function updateFacility($oldName, $newName)
-    {
-        $query = "UPDATE facilities SET name = :newName WHERE name = :oldName";
-        $bind = ['oldName' => $oldName, 'newName' => $newName];
+        $query = "UPDATE facilities SET name = :newName WHERE id = :id";
+        $bind = ['id' => $id, 'newName' => $newName];
         $this->db->executeQuery($query, $bind);
     }
 
@@ -63,7 +55,7 @@ class Facility extends Injectable
         $this->db->executeQuery($query, $bind);
     }
 
-    private function updateFacilityTags($facilityId, $tagIds)
+    public function updateFacilityTags($facilityId, $tagIds)
     {
         // delete existing tags to avoid duplicates
         $deleteQuery = "DELETE FROM facility_tags WHERE facility_id = :facility_id";
@@ -77,12 +69,14 @@ class Facility extends Injectable
 
     public function searchFacilities(array $filters): array
     {
-        $query = "SELECT DISTINCT f.id, f.name AS facility_name, l.city AS location_city
-              FROM facilities f
-              JOIN locations l ON f.location_id = l.id
-              LEFT JOIN facility_tags ft ON f.id = ft.facility_id
-              LEFT JOIN tags t ON ft.tag_id = t.id
-              WHERE 1 = 1";
+        $query = "SELECT f.name AS facility_name, l.city AS location_city, 
+            GROUP_CONCAT(DISTINCT t.name ORDER BY t.name SEPARATOR ', ') AS tags
+            FROM facilities f
+            JOIN locations l ON f.location_id = l.id
+            LEFT JOIN facility_tags ft ON f.id = ft.facility_id
+            LEFT JOIN tags t ON ft.tag_id = t.id
+            GROUP BY f.name, l.city;
+            ";
 
         $bind = [];
 
