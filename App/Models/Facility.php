@@ -69,14 +69,29 @@ class Facility extends Injectable
 
     public function searchFacilities(array $filters): array
     {
-        $query = "SELECT f.name AS facility_name, l.city AS location_city, 
-            GROUP_CONCAT(DISTINCT t.name ORDER BY t.name SEPARATOR ', ') AS tags
+        // $query = "SELECT f.name AS facility_name, l.city AS location_city, 
+        //     GROUP_CONCAT(DISTINCT t.name ORDER BY t.name SEPARATOR ', ') AS tags
+        //     FROM facilities f
+        //     JOIN locations l ON f.location_id = l.id
+        //     LEFT JOIN facility_tags ft ON f.id = ft.facility_id
+        //     LEFT JOIN tags t ON ft.tag_id = t.id
+        //     GROUP BY f.name, l.city;
+        //     ";
+
+        $query = "SELECT DISTINCT f.id, f.name AS facility_name, l.city AS location_city
+              FROM facilities f
+              JOIN locations l ON f.location_id = l.id
+              LEFT JOIN facility_tags ft ON f.id = ft.facility_id
+              LEFT JOIN tags t ON ft.tag_id = t.id
+              WHERE 1 = 1";
+
+        $query = "SELECT DISTINCT f.id, f.name AS facility_name, l.city AS location_city, t.name AS tag
             FROM facilities f
             JOIN locations l ON f.location_id = l.id
             LEFT JOIN facility_tags ft ON f.id = ft.facility_id
             LEFT JOIN tags t ON ft.tag_id = t.id
-            GROUP BY f.name, l.city;
-            ";
+            WHERE 1 = 1";
+
 
         $bind = [];
 

@@ -164,18 +164,21 @@ class FacilityServices extends Injectable
         return ['status' => true, 'message' => 'Facility successfully deleted!', 'code' => 200];
     }
 
+    /**
+     * Searches facilities based on some criteria and returns results
+     *
+     * @param array $filters Search criteria
+     * @return array Response with filtered data
+     */
     public function searchFacilitiesByFilter($filters = [])
     {
         $results = $this->facilityModel->searchFacilities($filters);
         if (!empty($results)) {
-            $data = [];
-            foreach ($results as $row) {
-                $data[] = $row;
-            }
+            $data = $this->parseFilteredData($results);
             return ['status' => true, 'message' => $data, 'code' => 200];
         }
 
-        return ['status' => false, 'message' => 'No facilities found matching the criteria', 'code' => 404];
+        return ['status' => false, 'message' => 'No facilities found', 'code' => 404];
     }
 
     // helper function to create tags
@@ -199,6 +202,36 @@ class FacilityServices extends Injectable
 
         $facility = $result->fetch(\PDO::FETCH_ASSOC);
         return $facility ? $facility['id'] : null;
+    }
+
+    /**
+     * Groups facilities by ID and collects respective tags
+     *
+     * @param array $results Facility data with id, facility_name, location_city and tag
+     * @return array Processed facilities with tags in a list
+     */
+    public function parseFilteredData($results)
+    {
+        $facilities = [];
+
+        foreach ($results as $row) {
+            $id = $row['id'];
+
+            if (!isset($facilities[$id])) {
+                $facilities[$id] = [
+                    'facility_name' => $row['facility_name'],
+                    'location_city' => $row['location_city'],
+                    'tags' => []
+                ];
+            }
+
+            if (!empty($row['tag']) && !in_array($row['tag'], $facilities[$id]['tags'])) {
+                $facilities[$id]['tags'][] = $row['tag'];
+            }
+        }
+
+        $data = array_values($facilities);
+        return $data;
     }
 
 }
